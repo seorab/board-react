@@ -1,0 +1,61 @@
+<div id="map" style="width:500px;height:400px;"></div>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=6f5e412de8a908b1b8fd2e279c35a69b"></script>
+
+<script>
+  let map;
+
+  function 결과(s) { // callback 함수
+    initMap(s.coords.latitude, s.coords.longitude);
+    showMarker(s.coords.latitude, s.coords.longitude);
+  }
+
+  navigator.geolocation.getCurrentPosition(결과);
+
+  async function showMarker(lat, lng) {
+    const data = await fetch(`/map/getPoint?lat=${lat}&lng=${lng}&km=50`);
+    const result = await data.json();
+    console.log(result);
+    for(let i = 0; i < result.length; i++) {
+      let obj = result[i];
+      let title = obj.title;
+      let latitude = obj.latitude;
+      let longitude = obj.longitude;
+      console.log(title, latitude, longitude);
+      const marker = new kakao.maps.Marker({
+        position: new kakao.maps.LatLng(latitude, longitude),
+        title: title
+      });
+      marker.setMap(map);
+    }
+    // for(let obj of result) {
+      
+    // }
+    // result.forEach((v) => {
+
+    // });
+  }
+
+  function initMap(lat, lng) {
+    const container = document.querySelector('#map');
+    const options = {
+      center: new kakao.maps.LatLng(lat, lng),
+      level: 8
+    };
+
+    map = new kakao.maps.Map(container, options);
+
+    const imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png';
+    const imageSize = new kakao.maps.Size(64, 69);
+    const imageOption = {offset: new kakao.maps.Point(27, 69)};
+
+    const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption)
+
+    const marker = new kakao.maps.Marker({
+        position: new kakao.maps.LatLng(lat, lng),
+        image: markerImage
+    });
+    marker.setMap(map);
+
+  }
+</script>

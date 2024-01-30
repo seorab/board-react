@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="common/head">
+
+</head>
+<body>
+
+<div th:replace="common/header">
+   
+</div>
+
+<nav th:replace="common/nav">
+
+</nav>
+
+<div class="container mt-5">
+  <div class="row">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>번호</th><th>제목</th><th>작성자</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="board : ${list}" th:attr="id=${board.id}">
+          <td th:text="${board.id}"></td>
+          <td>
+            <a th:href="'/board/' + ${board.id}">
+              [[ ${board.title} ]] 
+              ( [[ ${#lists.size(board.comments)} ]] )
+            </a>
+          </td>
+          <td th:text="${board.user.email}"></td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- 페이지네이션 -->
+    <ul class="pagination">
+      <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+
+      <li class="page-item" th:each="num : ${#numbers.sequence(start, end)}">
+        <a class="page-link" th:href="'/board/list?page=' + ${num}">
+          [[ ${num} ]]
+        </a>
+      </li>
+
+      <li class="page-item"><a class="page-link" href="#">Next</a></li>
+    </ul>
+    <!-- 페이지네이션 끝 -->
+
+    <button type="button" class="btn btn-primary btn-block" id="write-btn">글쓰기</button>
+  </div>
+</div>
+<script>
+  document.querySelector('#write-btn').addEventListener('click', () => {
+    location = '/board/write';
+  });
+  const trs = document.querySelectorAll('tbody > tr');
+  trs.forEach(v => {
+    v.addEventListener('click', () => {
+      const id = v.getAttribute('id');
+      location = `/board/${id}`;
+    })
+  })
+</script>
+
+<div th:replace="common/footer">
+</div>
+
+</body>
+</html>

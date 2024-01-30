@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="common/head">
+
+</head>
+<body>
+
+<div th:replace="common/header">
+   
+</div>
+
+<nav th:replace="common/nav">
+
+</nav>
+
+<div class="container mt-5">
+  <div class="card">
+    <div class="card-body">
+      <span class="badge bg-primary rounded-pill" th:text="${board.id} + '번'"></span>
+      <h5 class="card-title" th:text="${board.title}"></h5>
+      <h6 class="card-subtitle mb-2 text-muted" th:text="${board.user.email}"></h6>
+      <p class="card-text" th:text="${board.content}"></p>
+    </div>
+    <img th:src="'/download?id=' + ${atchFile.id}"
+         th:each="atchFile : ${board.atchFiles}">
+  </div>
+</div> 
+<div class="container mt-5">
+  <ul class="nav justify-content-end">
+    <li class="nav-item">
+      <a class="nav-link" href="#" id="list">목록</a>
+    </li>
+    <li class="nav-item" th:if="${session.user_info.email} == ${board.user.email}">
+      <a class="nav-link" th:href="'/board/update/' + ${board.id}" id="update">수정</a>
+    </li>
+    <li class="nav-item" th:if="${session.user_info.email == board.user.email}">
+      <a class="nav-link" th:href="'/board/delete/' + ${board.id}" id="delete" th:num="${board.id}">삭제</a>
+    </li>
+  </ul>
+</div>
+
+<!-- 댓글 입력 폼 -->
+<form action="/board/comment/add" method="post">
+  <input type="hidden" name="boardId" th:value="${board.id}">
+  <input type="text" name="comment">
+  <button>댓글 작성</button>
+</form>
+<hr>
+<ul>
+  <li th:each="comment : ${board.comments}">
+    [[ ${comment.comment} ]] / [[ ${comment.user.name} ]]
+    <button 
+      th:onclick="location='/board/comment/remove?id=[[${comment.id}]]'">삭제</button>
+    <button 
+      th:onclick="location='/board/comment/remove/[[${comment.id}]]'">삭제</button>
+  </li>
+</ul>
+
+<script>
+  const delBtn = document.querySelector('[id=delete]');
+  delBtn.addEventListener('click', (event) => {
+    event.prevenDefault();
+    const yesno = confirm("삭제??");
+    if(yesno) {
+      location = "/board/delete/[[ ${board.id} ]]";
+    }
+  });
+
+  // document.querySelector('#delete').addEventListener('click', (e) => {
+  //   e.preventDefault();
+  //   if(confirm('삭제하시겠습니까?')) {
+  //     const num = e.target.getAttribute('num');
+  //     location = `/board/delete/${num}`;
+  //   }
+  // });
+</script>
+
+<div th:replace="common/footer">
+</div>
+
+</body>
+</html>
